@@ -2,7 +2,6 @@ import os
 from FaceRecognitionRpi.face_recognizer import recog_func
 from FaceRecognitionRpi.datagenerator import student_images
 from FaceRecognitionRpi.face_trainer import imageTrainer
-from FaceMaskDetection import face_mask_lock
 from pyfiglet import figlet_format
 
 ## Title Bar
@@ -47,11 +46,7 @@ def main_menu():
                 print("Initiating Email Notification Procedure")
                 os.system("py mail.py")
                 break
-
-            elif user_choice == 5:
-                face_mask_lock.mask_detection()  
-                exit_key = input("Press any Key to retrun to Main Menu")
-                main_menu()  
+            
             else:
                 print("Invalid Choice")
                 main_menu()

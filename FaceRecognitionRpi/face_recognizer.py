@@ -3,21 +3,23 @@ import numpy as np
 import os
 import csv
 import datetime
-import time, psycopg2
+import time
 from random import uniform
 import pandas as pd
-#from smbus2 import SMBus
-#from mlx90614 import MLX90614
-#bus = SMBus(1)
-#sensor = MLX90614(bus, address=0x5A)
 
 col_names = ['Id', 'student_name', 'date', 'time', 'student_bodyTemperature']
-names = ["None", 'Jayateerth', 'Shreeraj', 'Tejas', 'Rupesh']
+
 attendance = pd.DataFrame(columns=col_names)
 
-#df = pd.read_csv('StudentDetails.csv')
 
-con = psycopg2.connect(database="FaceRecognition", user="postgres", password="dragonforcE#1", host="127.0.0.1", port="5432")
+def get_names_from_csv(csv_file):
+    df = pd.read_csv(csv_file)
+    names = ["None"] + df['Name'].tolist()
+    return names
+
+
+names = get_names_from_csv('FaceRecognitionRpi/StudentDetails.csv')
+print(names)
 
 
 def recog_func():
@@ -58,7 +60,7 @@ def recog_func():
                 date = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
                 timeStamp = datetime.datetime.fromtimestamp(
                     ts).strftime('%H-%M-%S')
-                #temp = sensor.get_object_1()
+                # temp = sensor.get_object_1()
                 # bus.close()
                 temp = round(uniform(36.7, 39.9), 2)
 
@@ -86,25 +88,8 @@ def recog_func():
     timeStamp = datetime.datetime.fromtimestamp(ts).strftime('%H-%M-%S')
     Hour, Minute, Second = timeStamp.split("-")
     fileName = "FaceRecognitionRpi/Attendance"+os.sep+"Attendance_" + date + ".csv"
-    insert_to_db(id=Id, name=name_ed, body_temp=temp, date=date, time=timeStamp)
     attendance.to_csv(fileName, index=False)
 
     print("Cleaning up Everything")
     cam.release()
     cv2.destroyAllWindows()
-
-
-def insert_to_db(id, name,date, time, body_temp):
-    cur = con.cursor()
-    # time = "'" + time +"'"
-    date = "'" + date +"'"
-    sql_query = "INSERT INTO attendance_info (student_id, student_name, body_temp, date, time)\n" \
-                "VALUES ({}, {}, {}, {}, {})".format(id, "'"+ name + "'", body_temp, date, "'" + time +"'")
-    print(sql_query)
-    cur.execute(sql_query)
-    con.commit()
-    print('Added to DB')
-    con.close()
-
-
-

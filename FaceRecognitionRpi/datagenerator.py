@@ -4,9 +4,20 @@ from time import sleep
 import csv
 
 
+def append_to_csv(file_name, id, name):
+    if not os.path.isfile(file_name):
+        with open(file_name, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["ID", "Name"])
+
+    with open(file_name, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([id, name])
+
 def student_images():
     cam = cv2.VideoCapture(0)
-    face_detector = cv2.CascadeClassifier("FaceRecognitionRpi/haarcascade_frontalface_default.xml")
+    face_detector = cv2.CascadeClassifier(
+        "FaceRecognitionRpi/haarcascade_frontalface_default.xml")
 
     Id = input("Enter your FaceId --> ")
     name = input("Enter the Student Name --> ")
@@ -34,10 +45,5 @@ def student_images():
 
     cam.release()
     cv2.destroyAllWindows()
-    data = "Saved Images of Id-->  " + Id + " Name--> " + name
-    print(data)
-    row = [Id, name]
-    with open("FaceRecognitionRpi/ClientDetails.csv", 'a+') as csvFile:
-        writer = csv.writer(csvFile)
-        writer.writerow(row)
-    csvFile.close()
+    append_to_csv('FaceRecognitionRpi/StudentDetails.csv', Id, name)
+    print("Saved Images of Id--> ", Id, " Name--> ", name)
